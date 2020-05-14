@@ -282,8 +282,6 @@ impl SignedRequest {
 
         self.remove_header("X-Amz-Date");
 
-        self.remove_header("Content-Type");
-
         if let Some(ref token) = *creds.token() {
             self.remove_header("X-Amz-Security-Token");
             self.params
@@ -619,11 +617,7 @@ fn sign_string(
 }
 
 /// Mark string as AWS4-HMAC-SHA256 hashed
-pub fn string_to_sign(
-    date: OffsetDateTime,
-    hashed_canonical_request: &str,
-    scope: &str,
-) -> String {
+pub fn string_to_sign(date: OffsetDateTime, hashed_canonical_request: &str, scope: &str) -> String {
     format!(
         "AWS4-HMAC-SHA256\n{}\n{}\n{}",
         date.format("%Y%m%dT%H%M%SZ"),
@@ -681,7 +675,7 @@ fn canonical_values(values: &[Vec<u8>]) -> String {
 }
 
 fn skipped_headers(header: &str) -> bool {
-    ["authorization", "content-length", "user-agent"].contains(&header)
+    ["authorization", "user-agent"].contains(&header)
 }
 
 /// Returns standardised URI
